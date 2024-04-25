@@ -1,7 +1,5 @@
 pipeline{
-    agent{
-        label "nodejs"
-    }
+    agent any
     stages{
         stage("Install dependencies"){
             steps{
@@ -20,6 +18,14 @@ pipeline{
                 sh "npm test"
             }
         }
+	stage('Deploy') {
+		steps {
+			sh '''
+				oc project ugwwrf-deploy-strategies
+				oc start-build greeting-service --follow --wait
+			'''
+		}
+	}
 
         // Add the "Deploy" stage here
     }
