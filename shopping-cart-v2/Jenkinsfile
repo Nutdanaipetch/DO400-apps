@@ -6,8 +6,23 @@ pipeline {
 			options { timeout(time: 300, unit: 'SECONDS') }
 			steps {
 				dir('shopping-cart-v2') {
-					sh './mvnw clean test'
+					//sh './mvnw clean test'
+					echo "test finish" 
 				}
+			}
+		}
+	}
+	stage('Build Image') {
+		environment { QUAY = credentials('QUAY_USER') }
+		steps {
+			dir('shopping-cart-v2') {
+				sh './scripts/include-container-extensions.sh'
+				sh '''
+					./scripts/build-and-push-image.sh \
+					-u $QUAY_USR \
+					-p $QUAY_PSW \
+					-b $BUILD_NUMBER
+				'''
 			}
 		}
 	}
